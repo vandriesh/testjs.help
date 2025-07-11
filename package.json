@@ -162,7 +162,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "epic-stack": {
-    "head": "e3c50b47dd3b5b0140a7223ab8206c5173c87313",
-    "date": "2025-05-13T16:39:47Z"
+    "head": "4e6532d08219cef41299615ad7556b205aa0b77d",
+    "date": "2025-07-02T05:11:12+02:00"
   }
 }

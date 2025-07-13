@@ -11,7 +11,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 		const loginParams = new URLSearchParams([
 			['redirectTo', `${requestUrl.pathname}${requestUrl.search}`],
 		])
-		const redirectTo = `/login?${loginParams}`
+		const redirectTo = `/login?${loginParams}&zz`
 		await logout({ request, redirectTo })
 		return redirect(redirectTo)
 	}

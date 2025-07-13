@@ -2,11 +2,20 @@
 	"include": ["**/*.ts", "**/*.tsx", ".react-router/types/**/*"],
 	"extends": ["@epic-web/config/typescript"],
 	"compilerOptions": {
+		/* Bundler mode */
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"isolatedModules": true,
+		"moduleDetection": "force",
+		"noEmit": true,
+		"jsx": "react-jsx",
+
 		// TODO: Probably should move this into epic-web/config
 		"types": ["@react-router/node", "vite/client"],
 		"rootDirs": [".", "./.react-router/types"],
 		"paths": {
 			"#app/*": ["./app/*"],
+			"#src/*": ["./app/my-src/*"],
 			"#tests/*": ["./tests/*"],
 			"@/icon-name": [
 				"./app/components/ui/icons/types.ts",

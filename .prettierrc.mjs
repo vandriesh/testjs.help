@@ -5,6 +5,8 @@ import usernamePrettierConfig from "@epic-web/config/prettier";
  */
 const config = {
 	...usernamePrettierConfig,
+    semi: true,
+	useTabs: false,
 	tabWidth: 4,
 	width: 120,
 	printWidth: 120,

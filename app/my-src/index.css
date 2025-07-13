@@ -1,0 +1,287 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Light theme styles */
+.light {
+  color-scheme: light;
+}
+
+.light body {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+.light .bg-gray-900 {
+  background-color: #ffffff !important;
+}
+
+.light .bg-gray-800 {
+  background-color: #f9fafb !important;
+}
+
+.light .text-white {
+  color: #111827 !important;
+}
+
+.light .text-gray-300 {
+  color: #374151 !important;
+}
+
+.light .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+.light .border-gray-700 {
+  border-color: #e5e7eb !important;
+}
+
+.light .border-gray-800 {
+  border-color: #d1d5db !important;
+}
+
+/* Dark theme styles */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #111827 !important;
+  color: #f9fafb;
+}
+
+.prose {
+  max-width: none;
+  color: #374151;
+}
+
+.dark .prose {
+  color: #e5e7eb;
+}
+
+.prose h1 {
+  @apply mt-10 mb-8 text-4xl font-bold text-gray-900;
+}
+
+.dark .prose h1 {
+  background: linear-gradient(135deg, #a855f7, #3b82f6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.prose h2 {
+  @apply mt-10 mb-6 text-3xl font-bold text-gray-900;
+}
+
+.dark .prose h2 {
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.prose h3 {
+  @apply mt-8 mb-4 text-2xl font-semibold text-gray-900;
+}
+
+.dark .prose h3 {
+  @apply text-white;
+}
+
+.prose p {
+  @apply mb-6 text-lg leading-relaxed text-gray-700;
+}
+
+.dark .prose p {
+  @apply text-gray-300;
+}
+
+.prose ul {
+  @apply mb-6 space-y-3 text-gray-700;
+}
+
+.dark .prose ul {
+  @apply text-gray-300;
+}
+
+.prose li {
+  @apply leading-relaxed;
+}
+
+.prose li::marker {
+  @apply text-blue-600;
+}
+
+.dark .prose li::marker {
+  @apply text-blue-400;
+}
+
+.prose strong {
+  @apply font-semibold text-gray-900;
+}
+
+.dark .prose strong {
+  @apply font-semibold text-white;
+}
+
+.prose code {
+  @apply rounded border border-gray-300 bg-gray-100 px-2 py-1 font-mono text-sm text-purple-700;
+}
+
+.dark .prose code {
+  @apply border border-gray-700 bg-gray-800 text-purple-300;
+}
+
+.prose pre {
+  @apply mb-8 overflow-x-auto rounded-xl border border-gray-300 bg-gray-50 p-6 text-gray-900 shadow-2xl;
+}
+
+.dark .prose pre {
+  @apply border border-gray-700 bg-gray-900 text-gray-100;
+}
+
+.prose pre code {
+  @apply border-0 p-0 text-gray-900;
+  background: #f3f3f3;
+}
+
+.dark .prose pre code {
+  @apply text-gray-100;
+  background: transparent;
+}
+
+.prose blockquote {
+  @apply mb-6 rounded-r-lg border-l-4 border-blue-500 bg-gray-100/50 py-4 pl-6 text-gray-600 italic;
+}
+
+.dark .prose blockquote {
+  @apply bg-gray-800/50 text-gray-400;
+}
+
+/* Code block container with copy button */
+.code-block-container {
+  @apply relative mb-8;
+}
+
+.copy-code-button {
+  @apply absolute top-4 right-4 rounded-lg p-2 text-gray-600 hover:text-gray-900;
+  @apply border border-gray-300 bg-white/90 hover:border-gray-400 hover:bg-gray-100/90;
+  @apply shadow-lg backdrop-blur-sm transition-all duration-200;
+  @apply opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95;
+}
+
+.dark .copy-code-button {
+  @apply border border-gray-600 bg-gray-800/90 text-gray-300 hover:border-gray-500 hover:bg-gray-700/90 hover:text-white;
+}
+
+.copy-code-button.copied {
+  @apply border-green-400 bg-green-500/90 text-white opacity-100;
+}
+
+.copy-code-button .check-icon {
+  @apply hidden;
+}
+
+.copy-code-button.copied .copy-icon {
+  @apply hidden;
+}
+
+.copy-code-button.copied .check-icon {
+  @apply block;
+}
+
+/* Custom scrollbar */
+.prose pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+.prose pre::-webkit-scrollbar-track {
+  background: #374151;
+  border-radius: 4px;
+}
+
+.prose pre::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 4px;
+}
+
+.prose pre::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.light .prose pre::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+.light .prose pre::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+}
+
+.light .prose pre::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Syntax highlighting improvements */
+.hljs {
+  background: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+
+.hljs-keyword {
+  color: #a855f7 !important;
+}
+
+.hljs-string {
+  color: #10b981 !important;
+}
+
+.hljs-function {
+  color: #3b82f6 !important;
+}
+
+.hljs-comment {
+  color: #6b7280 !important;
+}
+
+.hljs-variable {
+  color: #06b6d4 !important;
+}
+
+.hljs-number {
+  color: #f59e0b !important;
+}
+
+.dark code {
+  background-color: transparent;
+}
+
+pre code {
+  display: block;
+}

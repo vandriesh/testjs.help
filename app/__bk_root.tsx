@@ -28,7 +28,6 @@ import {
 	useTheme,
 } from './routes/resources+/theme-switch.tsx'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
-// import tailwindStyleSheetUrl2 from './my-src/index.css?url'
 import { getUserId, logout } from './utils/auth.server.ts'
 import { ClientHintCheck, getHints } from './utils/client-hints.tsx'
 import { prisma } from './utils/db.server.ts'
@@ -41,8 +40,6 @@ import { type Theme, getTheme } from './utils/theme.server.ts'
 import { makeTimings, time } from './utils/timing.server.ts'
 import { getToast } from './utils/toast.server.ts'
 import { useOptionalUser } from './utils/user.ts'
-import App from '#app/my-src/App.tsx';
-import React from 'react';
 
 export const links: Route.LinksFunction = () => {
 	return [
@@ -61,13 +58,12 @@ export const links: Route.LinksFunction = () => {
 			crossOrigin: 'use-credentials',
 		} as const, // necessary to make typescript happy
 		{ rel: 'stylesheet', href: tailwindStyleSheetUrl },
-		// { rel: 'stylesheet', href: tailwindStyleSheetUrl2 },
 	].filter(Boolean)
 }
 
 export const meta: Route.MetaFunction = ({ data }) => {
 	return [
-		{ title: data ? 'testjs.help' : 'Error | testjs.help' },
+		{ title: data ? 'Epic Notes' : 'Error | Epic Notes' },
 		{ name: 'description', content: `Your own captain's log` },
 	]
 }
@@ -141,7 +137,7 @@ export const headers: Route.HeadersFunction = pipeHeaders
 function Document({
 	children,
 	nonce,
-	theme = 'dark',
+	theme = 'light',
 	env = {},
 }: {
 	children: React.ReactNode
@@ -189,7 +185,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	)
 }
 
-function OrigApp() {
+function App() {
 	const data = useLoaderData<typeof loader>()
 	const user = useOptionalUser()
 	const theme = useTheme()
@@ -251,14 +247,13 @@ function Logo() {
 	)
 }
 
-
 function AppWithProviders() {
-    const data = useLoaderData<typeof loader>()
-    return (
-        <HoneypotProvider {...data.honeyProps}>
-            <App />
-        </HoneypotProvider>
-    )
+	const data = useLoaderData<typeof loader>()
+	return (
+		<HoneypotProvider {...data.honeyProps}>
+			<App />
+		</HoneypotProvider>
+	)
 }
 
 export default AppWithProviders

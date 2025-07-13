@@ -1,0 +1,384 @@
+# Testing React Components
+
+Learn how to test React components effectively, including props, state, events, and complex interactions.
+
+## Testing Components with Props
+
+When testing components that accept props, focus on verifying that the component renders correctly based on different prop values.
+
+```typescript
+// UserCard.tsx
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  avatar?: string;
+}
+
+interface UserCardProps {
+  user: User;
+  onEdit?: (user: User) => void;
+  showEmail?: boolean;
+}
+
+export function UserCard({ user, onEdit, showEmail = true }: UserCardProps) {
+  return (
+    <div className="user-card p-4 border rounded-lg">
+      <div className="flex items-center space-x-3">
+        {user.avatar && (
+          <img 
+            src={user.avatar} 
+            alt={`${user.name} avatar`}
+            className="w-10 h-10 rounded-full"
+          />
+        )}
+        <div>
+          <h3 className="font-semibold">{user.name}</h3>
+          {showEmail && <p className="text-gray-600">{user.email}</p>}
+        </div>
+      </div>
+      
+      {onEdit && (
+        <button 
+          onClick={() => onEdit(user)}
+          className="mt-3 px-3 py-1 bg-blue-500 text-white rounded"
+        >
+          Edit
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+Test the component with different prop combinations:
+
+```typescript
+// UserCard.test.tsx
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect, vi } from 'vitest';
+import { UserCard } from './UserCard';
+
+const mockUser = {
+  id: 1,
+  name: 'John Doe',
+  email: 'john@example.com',
+  avatar: 'https://example.com/avatar.jpg'
+};
+
+describe('UserCard', () => {
+  it('renders user information correctly', () => {
+    render(<UserCard user={mockUser} />);
+    
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('john@example.com')).toBeInTheDocument();
+    expect(screen.getByAltText('John Doe avatar')).toBeInTheDocument();
+  });
+
+  it('hides email when showEmail is false', () => {
+    render(<UserCard user={mockUser} showEmail={false} />);
+    
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.queryByText('john@example.com')).not.toBeInTheDocument();
+  });
+
+  it('shows edit button when onEdit is provided', () => {
+    const onEdit = vi.fn();
+    render(<UserCard user={mockUser} onEdit={onEdit} />);
+    
+    expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+  });
+
+  it('calls onEdit when edit button is clicked', async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    
+    render(<UserCard user={mockUser} onEdit={onEdit} />);
+    
+    await user.click(screen.getByRole('button', { name: 'Edit' }));
+    expect(onEdit).toHaveBeenCalledWith(mockUser);
+  });
+
+  it('renders without avatar when not provided', () => {
+    const userWithoutAvatar = { ...mockUser, avatar: undefined };
+    render(<UserCard user={userWithoutAvatar} />);
+    
+    expect(screen.queryByAltText('John Doe avatar')).not.toBeInTheDocument();
+  });
+});
+```
+
+## Testing Stateful Components
+
+For components with internal state, test the state changes and their effects:
+
+```typescript
+// Counter.tsx
+import { useState } from 'react';
+
+interface CounterProps {
+  initialValue?: number;
+  max?: number;
+}
+
+export function Counter({ initialValue = 0, max = 10 }: CounterProps) {
+  const [count, setCount] = useState(initialValue);
+
+  const increment = () => {
+    if (count < max) {
+      setCount(count + 1);
+    }
+  };
+
+  const decrement = () => {
+    if (count > 0) {
+      setCount(count - 1);
+    }
+  };
+
+  return (
+    <div className="counter">
+      <p>Count: {count}</p>
+      <button onClick={decrement} disabled={count === 0}>
+        Decrement
+      </button>
+      <button onClick={increment} disabled={count === max}>
+        Increment
+      </button>
+      {count === max && <p>Maximum reached!</p>}
+    </div>
+  );
+}
+```
+
+Test state changes and side effects:
+
+```typescript
+// Counter.test.tsx
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect } from 'vitest';
+import { Counter } from './Counter';
+
+describe('Counter', () => {
+  it('renders initial count', () => {
+    render(<Counter initialValue={5} />);
+    expect(screen.getByText('Count: 5')).toBeInTheDocument();
+  });
+
+  it('increments count when increment button is clicked', async () => {
+    const user = userEvent.setup();
+    render(<Counter />);
+    
+    await user.click(screen.getByRole('button', { name: 'Increment' }));
+    expect(screen.getByText('Count: 1')).toBeInTheDocument();
+  });
+
+  it('decrements count when decrement button is clicked', async () => {
+    const user = userEvent.setup();
+    render(<Counter initialValue={5} />);
+    
+    await user.click(screen.getByRole('button', { name: 'Decrement' }));
+    expect(screen.getByText('Count: 4')).toBeInTheDocument();
+  });
+
+  it('disables decrement button when count is 0', () => {
+    render(<Counter />);
+    expect(screen.getByRole('button', { name: 'Decrement' })).toBeDisabled();
+  });
+
+  it('disables increment button when max is reached', async () => {
+    const user = userEvent.setup();
+    render(<Counter initialValue={2} max={3} />);
+    
+    await user.click(screen.getByRole('button', { name: 'Increment' }));
+    expect(screen.getByRole('button', { name: 'Increment' })).toBeDisabled();
+  });
+
+  it('shows maximum reached message when max is reached', async () => {
+    const user = userEvent.setup();
+    render(<Counter initialValue={2} max={3} />);
+    
+    await user.click(screen.getByRole('button', { name: 'Increment' }));
+    expect(screen.getByText('Maximum reached!')).toBeInTheDocument();
+  });
+});
+```
+
+## Testing Form Components
+
+Forms require special attention to user input and validation:
+
+```typescript
+// ContactForm.tsx
+import { useState } from 'react';
+
+interface FormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface ContactFormProps {
+  onSubmit: (data: FormData) => void;
+}
+
+export function ContactForm({ onSubmit }: ContactFormProps) {
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [errors, setErrors] = useState<Partial<FormData>>({});
+
+  const validateForm = (): boolean => {
+    const newErrors: Partial<FormData> = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      onSubmit(formData);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label htmlFor="name">Name</label>
+        <input
+          id="name"
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          className="w-full border rounded px-3 py-2"
+        />
+        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          className="w-full border rounded px-3 py-2"
+        />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="message">Message</label>
+        <textarea
+          id="message"
+          value={formData.message}
+          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+          className="w-full border rounded px-3 py-2"
+          rows={4}
+        />
+        {errors.message && <p className="text-red-500 text-sm">{errors.message}</p>}
+      </div>
+
+      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+        Send Message
+      </button>
+    </form>
+  );
+}
+```
+
+Test form interactions comprehensively:
+
+```typescript
+// ContactForm.test.tsx
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect, vi } from 'vitest';
+import { ContactForm } from './ContactForm';
+
+describe('ContactForm', () => {
+  it('renders all form fields', () => {
+    render(<ContactForm onSubmit={vi.fn()} />);
+    
+    expect(screen.getByLabelText('Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Message')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Send Message' })).toBeInTheDocument();
+  });
+
+  it('submits form with valid data', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    
+    render(<ContactForm onSubmit={onSubmit} />);
+    
+    await user.type(screen.getByLabelText('Name'), 'John Doe');
+    await user.type(screen.getByLabelText('Email'), 'john@example.com');
+    await user.type(screen.getByLabelText('Message'), 'Hello world!');
+    
+    await user.click(screen.getByRole('button', { name: 'Send Message' }));
+    
+    expect(onSubmit).toHaveBeenCalledWith({
+      name: 'John Doe',
+      email: 'john@example.com',
+      message: 'Hello world!'
+    });
+  });
+
+  it('shows validation errors for empty fields', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    
+    render(<ContactForm onSubmit={onSubmit} />);
+    
+    await user.click(screen.getByRole('button', { name: 'Send Message' }));
+    
+    expect(screen.getByText('Name is required')).toBeInTheDocument();
+    expect(screen.getByText('Email is required')).toBeInTheDocument();
+    expect(screen.getByText('Message is required')).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('shows validation error for invalid email', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    
+    render(<ContactForm onSubmit={onSubmit} />);
+    
+    await user.type(screen.getByLabelText('Email'), 'invalid-email');
+    await user.click(screen.getByRole('button', { name: 'Send Message' }));
+    
+    expect(screen.getByText('Email is invalid')).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+});
+```
+
+## Key Testing Strategies
+
+1. **Test Props Thoroughly**: Verify all prop combinations and edge cases
+2. **Test State Changes**: Focus on state transitions and their effects
+3. **Test User Interactions**: Simulate real user behavior
+4. **Test Error States**: Verify error handling and validation
+5. **Test Accessibility**: Ensure components work with screen readers
+
+These patterns will help you build comprehensive test suites for your React components! 🧪

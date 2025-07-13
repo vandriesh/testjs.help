@@ -5,6 +5,7 @@
   "type": "module",
   "imports": {
     "#app/*": "./app/*",
+    "#src/*": "./app/my-src/*",
     "#tests/*": "./tests/*"
   },
   "scripts": {
@@ -43,6 +44,8 @@
     "@epic-web/invariant": "^1.0.0",
     "@epic-web/remember": "^1.1.0",
     "@epic-web/totp": "^4.0.1",
+    "@mdx-js/react": "3.1.0",
+    "@mdx-js/rollup": "3.1.0",
     "@mjackson/form-data-parser": "^0.7.0",
     "@mjackson/headers": "^0.10.0",
     "@nasa-gcn/remix-seo": "^2.0.1",
@@ -89,6 +92,7 @@
     "isbot": "^5.1.27",
     "litefs-js": "^1.1.2",
     "lru-cache": "^11.1.0",
+    "lucide-react": "^0.344.0",
     "mime-types": "^3.0.1",
     "morgan": "^1.10.0",
     "openimg": "^0.7.0",
@@ -97,6 +101,10 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.5.3",
+    "rehype-highlight": "^7.0.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-slug": "^6.0.0",
+    "remark-gfm": "^4.0.0",
     "remix-auth": "^4.2.0",
     "remix-auth-github": "^3.0.2",
     "remix-utils": "^8.5.0",
@@ -111,6 +119,14 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "autoprefixer": "^10.4.18",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.11",
+    "globals": "^15.9.0",
+    "highlight.js": "^11.9.0",
+    "postcss": "^8.4.35",
+    "typescript-eslint": "^8.3.0",
     "@epic-web/config": "^1.20.1",
     "@faker-js/faker": "^9.7.0",
     "@playwright/test": "^1.52.0",

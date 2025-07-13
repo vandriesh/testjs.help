@@ -1,0 +1,174 @@
+# Getting Started with React Testing
+
+Testing is a crucial part of building reliable React applications. In this guide, we'll explore the fundamentals of testing React components using **Vitest** and **React Testing Library**.
+
+## Why Test React Applications?
+
+Testing helps us:
+- **Catch bugs early** in the development process
+- **Ensure components work** as expected
+- **Maintain code quality** over time
+- **Build confidence** when refactoring
+
+## Setting Up Your Testing Environment
+
+First, let's set up Vitest and React Testing Library:
+
+```bash
+npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event
+```
+
+Create a `vite.config.ts` file with testing configuration:
+
+```typescript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+  },
+})
+```
+
+## Your First React Test
+
+Let's start with a simple component test:
+
+```typescript
+// Button.tsx
+interface ButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+export function Button({ children, onClick, disabled }: ButtonProps) {
+  return (
+    <button 
+      onClick={onClick} 
+      disabled={disabled}
+      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+Now let's test it:
+
+```typescript
+// Button.test.tsx
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect, vi } from 'vitest';
+import { Button } from './Button';
+
+describe('Button', () => {
+  it('renders button with text', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument();
+  });
+
+  it('calls onClick when clicked', async () => {
+    const user = userEvent.setup();
+    const handleClick = vi.fn();
+    
+    render(<Button onClick={handleClick}>Click me</Button>);
+    
+    await user.click(screen.getByRole('button'));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('is disabled when disabled prop is true', () => {
+    render(<Button disabled>Click me</Button>);
+    expect(screen.getByRole('button')).toBeDisabled();
+  });
+});
+```
+
+## Testing Best Practices
+
+### 1. Test Behavior, Not Implementation
+Focus on what the component does, not how it does it:
+
+```typescript
+// ❌ Bad - testing implementation details
+expect(wrapper.find('.button-class')).toHaveLength(1);
+
+// ✅ Good - testing behavior
+expect(screen.getByRole('button')).toBeInTheDocument();
+```
+
+### 2. Use Meaningful Test Names
+Write descriptive test names that explain the expected behavior:
+
+```typescript
+// ❌ Bad
+it('test button', () => {});
+
+// ✅ Good
+it('should call onClick handler when button is clicked', () => {});
+```
+
+### 3. Arrange, Act, Assert Pattern
+Structure your tests clearly:
+
+```typescript
+it('should update counter when increment button is clicked', async () => {
+  // Arrange
+  const user = userEvent.setup();
+  render(<Counter />);
+  
+  // Act
+  await user.click(screen.getByRole('button', { name: 'Increment' }));
+  
+  // Assert
+  expect(screen.getByText('Count: 1')).toBeInTheDocument();
+});
+```
+
+## Common Testing Patterns
+
+### Testing Props
+```typescript
+it('should display the correct title', () => {
+  render(<Card title="Test Title" />);
+  expect(screen.getByText('Test Title')).toBeInTheDocument();
+});
+```
+
+### Testing Conditional Rendering
+```typescript
+it('should show loading state when loading is true', () => {
+  render(<DataComponent loading={true} />);
+  expect(screen.getByText('Loading...')).toBeInTheDocument();
+});
+```
+
+### Testing User Interactions
+```typescript
+it('should toggle visibility when button is clicked', async () => {
+  const user = userEvent.setup();
+  render(<ToggleComponent />);
+  
+  const button = screen.getByRole('button', { name: 'Toggle' });
+  await user.click(button);
+  
+  expect(screen.getByText('Content is visible')).toBeInTheDocument();
+});
+```
+
+## Next Steps
+
+Now that you understand the basics, you can:
+- Learn about testing more complex components
+- Explore mocking external dependencies
+- Practice testing forms and user input
+- Discover testing custom hooks
+
+Happy testing! 🧪

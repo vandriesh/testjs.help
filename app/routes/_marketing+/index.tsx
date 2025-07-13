@@ -1,101 +1,85 @@
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from '#app/components/ui/tooltip.tsx'
-import { cn } from '#app/utils/misc.tsx'
-import { type Route } from './+types/index.ts'
-import { logos } from './logos/logos.ts'
+import { MDXProvider } from '@mdx-js/react';
+import React, { useEffect } from 'react';
+import { BlogContent } from '#src/components/BlogContent.tsx';
+// import { type Route } from './+types/index.ts';
+// import { type logos } from './logos/logos.ts';
 
-export const meta: Route.MetaFunction = () => [{ title: 'Epic Notes' }]
+// export const meta: Route.MetaFunction = () => [{ title: 'Welcome!' }];
 
-// Tailwind Grid cell classes lookup
-const columnClasses: Record<(typeof logos)[number]['column'], string> = {
-	1: 'xl:col-start-1',
-	2: 'xl:col-start-2',
-	3: 'xl:col-start-3',
-	4: 'xl:col-start-4',
-	5: 'xl:col-start-5',
-}
-const rowClasses: Record<(typeof logos)[number]['row'], string> = {
-	1: 'xl:row-start-1',
-	2: 'xl:row-start-2',
-	3: 'xl:row-start-3',
-	4: 'xl:row-start-4',
-	5: 'xl:row-start-5',
-	6: 'xl:row-start-6',
-}
+const components = {
+    code: ({ children, className, ...props }: any) => (
+        <code className={`${className} rounded bg-gray-800 px-2 py-1 font-mono text-sm text-purple-300`} {...props}>
+            {children}
+        </code>
+    ),
+};
 
 export default function Index() {
-	return (
-		<main className="font-poppins grid h-full place-items-center">
-			<div className="grid place-items-center px-4 py-16 xl:grid-cols-2 xl:gap-24">
-				<div className="flex max-w-md flex-col items-center text-center xl:order-2 xl:items-start xl:text-left">
-					<a
-						href="https://www.epicweb.dev/stack"
-						className="animate-slide-top xl:animate-slide-left [animation-fill-mode:backwards] xl:[animation-delay:0.5s] xl:[animation-fill-mode:backwards]"
-					>
-						<svg
-							className="text-foreground size-20 xl:-mt-4"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 65 65"
-						>
-							<path
-								fill="currentColor"
-								d="M39.445 25.555 37 17.163 65 0 47.821 28l-8.376-2.445Zm-13.89 0L28 17.163 0 0l17.179 28 8.376-2.445Zm13.89 13.89L37 47.837 65 65 47.821 37l-8.376 2.445Zm-13.89 0L28 47.837 0 65l17.179-28 8.376 2.445Z"
-							></path>
-						</svg>
-					</a>
-					<h1
-						data-heading
-						className="animate-slide-top text-foreground xl:animate-slide-left mt-8 text-4xl font-medium [animation-delay:0.3s] [animation-fill-mode:backwards] md:text-5xl xl:mt-4 xl:text-6xl xl:[animation-delay:0.8s] xl:[animation-fill-mode:backwards]"
-					>
-						<a href="https://www.epicweb.dev/stack">The Epic Stack</a>
-					</h1>
-					<p
-						data-paragraph
-						className="animate-slide-top text-muted-foreground xl:animate-slide-left mt-6 text-xl/7 [animation-delay:0.8s] [animation-fill-mode:backwards] xl:mt-8 xl:text-xl/6 xl:leading-10 xl:[animation-delay:1s] xl:[animation-fill-mode:backwards]"
-					>
-						Check the{' '}
-						<a
-							className="underline hover:no-underline"
-							href="https://github.com/epicweb-dev/epic-stack/blob/main/docs/getting-started.md"
-						>
-							Getting Started guide
-						</a>{' '}
-						file for how to get your project off the ground!
-					</p>
-				</div>
-				<ul className="mt-16 flex max-w-3xl flex-wrap justify-center gap-2 sm:gap-4 xl:mt-0 xl:grid xl:grid-flow-col xl:grid-cols-5 xl:grid-rows-6">
-					<TooltipProvider>
-						{logos.map((logo, i) => (
-							<li
-								key={logo.href}
-								className={cn(
-									columnClasses[logo.column],
-									rowClasses[logo.row],
-									'animate-roll-reveal [animation-fill-mode:backwards]',
-								)}
-								style={{ animationDelay: `${i * 0.07}s` }}
-							>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<a
-											href={logo.href}
-											className="grid size-20 place-items-center rounded-2xl bg-violet-600/10 p-4 transition hover:-rotate-6 hover:bg-violet-600/15 sm:size-24 dark:bg-violet-200 dark:hover:bg-violet-100"
-										>
-											<img src={logo.src} alt="" />
-										</a>
-									</TooltipTrigger>
-									<TooltipContent>{logo.alt}</TooltipContent>
-								</Tooltip>
-							</li>
-						))}
-					</TooltipProvider>
-				</ul>
-			</div>
-		</main>
-	)
+    useEffect(() => {
+        // Add click handlers for copy buttons after MDX content is rendered
+        const handleCopyClick = async (event: Event) => {
+            const button = event.currentTarget as HTMLButtonElement;
+            const codeText = button.getAttribute('data-code');
+
+            if (codeText) {
+                try {
+                    await navigator.clipboard.writeText(codeText);
+                    button.classList.add('copied');
+                    setTimeout(() => {
+                        button.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy code:', err);
+                }
+            }
+        };
+
+        // Attach event listeners to all copy buttons
+        const copyButtons = document.querySelectorAll('.copy-code-button');
+        copyButtons.forEach((button) => {
+            button.addEventListener('click', handleCopyClick);
+        });
+
+        // Cleanup event listeners
+        return () => {
+            copyButtons.forEach((button) => {
+                button.removeEventListener('click', handleCopyClick);
+            });
+        };
+    }, []); // Remove dependency on activeFramework since we no longer have global tabs
+
+    return (
+        <MDXProvider components={components}>
+            <div className="my-16 text-center">
+                <div className="relative mb-8">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-cyan-600/20 blur-3xl"></div>
+                    <h1 className="relative mb-6 bg-gradient-to-r from-purple-400 via-blue-500 to-cyan-400 bg-clip-text py-2 text-6xl leading-tight font-bold text-transparent">
+                        Master JavaScript Testing
+                    </h1>
+                </div>
+                <p className="mx-auto max-w-4xl text-xl leading-relaxed text-gray-700 dark:text-gray-300">
+                    Learn testing best practices with real-world examples for React, Vue, and Angular. From unit tests
+                    to integration testing, we've got you covered with modern tools and techniques.
+                </p>
+                <div className="mt-8 flex items-center justify-center space-x-6">
+                    <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
+                        <span className="text-sm">Always up-to-date</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-blue-400"></div>
+                        <span className="text-sm">Production-ready examples</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-purple-400"></div>
+                        <span className="text-sm">Best practices included</span>
+                    </div>
+                </div>
+            </div>
+
+            <main className="mx-auto max-w-7xl px-4 py-12">
+                <BlogContent />
+            </main>
+        </MDXProvider>
+    );
 }
